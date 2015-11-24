@@ -1,0 +1,34 @@
+<idea-plugin>
+  <!-- Plugin name -->
+  <name>HybrisPlugin</name>
+
+  <!-- Description -->
+  <description>
+    <![CDATA[
+        A plugin, witch provide some hybris operations.
+        Currently supported:<ul>
+            <li>Execute Bean Shell scripts (Suffix must be .bsh or .beanshell)</li>
+            <li>Execute Groovy scripts (IntelliJ have to mark file as Groovy script)</li>
+            <li>Execute FlexibleSearch (Suffix must be .flex or .flexsearch)</li>
+        </ul>
+    ]]>
+  </description>
+
+  <!-- Plugin version -->
+  <version>1.2.1</version>
+
+  <!-- Plugin's vendor -->
+  <vendor>neuland Bremen GmbH</vendor>
+
+  <!-- Plugin's application components -->
+    <idea-version since-build="133"/>
+
+
+  <!-- Component's actions -->
+    <extensions defaultExtensionNs="com.intellij">
+        <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
+        <configurationType implementation="de.neuland.hybris.run.action.config.HybrisConfigurationType"/>
+        <programRunner implementation="de.neuland.hybris.run.action.runner.HybrisRunProgrammRunner"/>
+    </extensions>
+
+</idea-plugin>
