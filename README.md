@@ -24,3 +24,8 @@ Download the plugin from [JetBrains repository](https://plugins.jetbrains.com/pl
 * Create a new file that end with .flex or .flexsearch
 * Write your script
 * Run the script with your run configuration
+
+## Libaries
+* Apache HTTP Client (v. 4.4)
+* btc-ascii-table (v 1.0)
+* junit (v 4.8.1 | just for tests)
