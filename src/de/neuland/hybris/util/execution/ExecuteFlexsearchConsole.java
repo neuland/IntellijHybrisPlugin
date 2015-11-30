@@ -2,7 +2,6 @@ package de.neuland.hybris.util.execution;
 
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
@@ -16,17 +15,19 @@ import de.neuland.hybris.util.application.ConsoleToolWindowUtil;
 import de.neuland.hybris.http.HybrisHTTPRequest;
 import de.neuland.hybris.http.ServerAnwserTypes;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 
 public class ExecuteFlexsearchConsole extends ExecuteConsole {
 
-    private static final String[] CONSOLE_NAMES = new String[]{"Search Result", "Execution statistics", "History"};
-    private static final String[] CONSOLE_DESCRIPTIONS = new String[]{"Flexsearch Results", "Flexsearch execution statistics", "Flexsearch history"};
+    private static final String[] CONSOLE_NAMES = new String[]{"Search Result", "Execution statistics", "History", "Stacktrace"};
+    private static final String[] CONSOLE_DESCRIPTIONS = new String[]{"Flexsearch Results", "Flexsearch execution statistics", "Flexsearch history", "Flexsearch Erros"};
 
-    private ConsoleView executionStatiscisConsole;
+    private ConsoleView executionStatisticsConsole;
     private ConsoleView searchResultConsole;
     private ConsoleView historyConsole;
+    private ConsoleView stacktraceConsoleView;
 
     private static ExecuteFlexsearchConsole ourInstance = new ExecuteFlexsearchConsole();
 
@@ -49,9 +50,19 @@ public class ExecuteFlexsearchConsole extends ExecuteConsole {
                     String jsonResult = hybrisHttpRequest.executeFlexsearchScript(documentContent, jSessionID);
                     markRequestAsFinish();
                     try {
-                        updateConsoleWindow(hybrisHttpRequest.getHybrisFlexsearchConsoleOutput(jsonResult, ServerAnwserTypes.SEARCH_RESULT), ConsoleViewContentType.NORMAL_OUTPUT, searchResultConsole);
-                        updateConsoleWindow(hybrisHttpRequest.getHybrisFlexsearchConsoleOutput(jsonResult, ServerAnwserTypes.EXECUTION_STATISTICS), ConsoleViewContentType.NORMAL_OUTPUT, executionStatiscisConsole);
-                        updateConsoleWindow(hybrisHttpRequest.getHybrisFlexsearchConsoleOutput(jsonResult, ServerAnwserTypes.HISTORY), ConsoleViewContentType.NORMAL_OUTPUT, historyConsole);
+                        JSONObject responseJson = new JSONObject(jsonResult);
+                        if(!responseJson.has("exception") || responseJson.isNull("exception")) {
+                            updateConsoleWindow(hybrisHttpRequest.getHybrisFlexsearchConsoleOutput(jsonResult, ServerAnwserTypes.SEARCH_RESULT), ConsoleViewContentType.NORMAL_OUTPUT, searchResultConsole);
+                            updateConsoleWindow(hybrisHttpRequest.getHybrisFlexsearchConsoleOutput(jsonResult, ServerAnwserTypes.EXECUTION_STATISTICS), ConsoleViewContentType.NORMAL_OUTPUT, executionStatisticsConsole);
+                            updateConsoleWindow(hybrisHttpRequest.getHybrisFlexsearchConsoleOutput(jsonResult, ServerAnwserTypes.HISTORY), ConsoleViewContentType.NORMAL_OUTPUT, historyConsole);
+                            ConsoleToolWindowUtil.getInstance().selectTab(0);
+                        } else {
+                            StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
+                            JBPopupFactory.getInstance().createHtmlTextBalloonBuilder("Error inside flexible search", MessageType.ERROR, null).setFadeoutTime(7500)
+                                    .createBalloon().show(RelativePoint.getCenterOf(statusBar.getComponent()), Balloon.Position.atRight);
+                            updateConsoleWindow(hybrisHttpRequest.getHybrisFlexsearchConsoleOutput(jsonResult, ServerAnwserTypes.FLEXSEARCH_EXCEPTION), ConsoleViewContentType.ERROR_OUTPUT, stacktraceConsoleView);
+                            ConsoleToolWindowUtil.getInstance().selectTab(3);
+                        }
                     } catch (JSONException e) {
                         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
                         JBPopupFactory.getInstance().createHtmlTextBalloonBuilder("Error while parsing FlexibleSearch response", MessageType.ERROR, null).setFadeoutTime(7500)
@@ -72,12 +83,13 @@ public class ExecuteFlexsearchConsole extends ExecuteConsole {
         }
         ConsoleToolWindowUtil.getInstance().setConsoleName(CONSOLE_NAMES);
         ConsoleToolWindowUtil.getInstance().setConsoleDescription(CONSOLE_DESCRIPTIONS);
-        ConsoleToolWindowUtil.getInstance().showConsoleToolWindow(project, executionStatiscisConsole, searchResultConsole, historyConsole, "Hybris Flexsearch Console");
+        ConsoleToolWindowUtil.getInstance().showConsoleToolWindow(project, "Hybris Flexsearch Console", searchResultConsole, executionStatisticsConsole, historyConsole, stacktraceConsoleView);
     }
 
     public void initConsoleWindow(Project project) {
-        executionStatiscisConsole = createConsole(project);
+        executionStatisticsConsole = createConsole(project);
         searchResultConsole = createConsole(project);
         historyConsole = createConsole(project);
+        stacktraceConsoleView = createConsole(project);
     }
 }

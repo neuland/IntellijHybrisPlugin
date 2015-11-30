@@ -118,8 +118,11 @@ public class HybrisHTTPRequest {
                     "\nAusführungszeit: " + returnFromJSON(json, "executionTime") + "ms" +
                     "\nErsetzter Parameter" + returnFromJSON(json, "parametersAsString");
         }
-        if(type== ServerAnwserTypes.HISTORY) {
+        if(type == ServerAnwserTypes.HISTORY) {
             return returnFromJSON(json, "query");
+        }
+        if(type == ServerAnwserTypes.FLEXSEARCH_EXCEPTION) {
+            return returnFlexsearchStacktraceFromJSON(json);
         }
         return null;
     }
@@ -171,6 +174,27 @@ public class HybrisHTTPRequest {
         return ASCIITable.getInstance().getTable(headerRow, values);
     }
 
+    private String returnFlexsearchStacktraceFromJSON(String json) {
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject exceptionJson = jsonObject.getJSONObject("exception");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception message: ").append(exceptionJson.getString("message")).append("\n\nStacktrace:\n");
+
+        JSONArray stackTraceJson = exceptionJson.getJSONArray("stackTrace");
+        for(int i = 0; i < stackTraceJson.length(); i++) {
+            JSONObject currentStackTraceEntry = stackTraceJson.getJSONObject(i);
+            Object className = currentStackTraceEntry.get("className");
+            Object methodName = currentStackTraceEntry.get("methodName");
+            Object fileName = currentStackTraceEntry.get("fileName");
+            int lineNumber = currentStackTraceEntry.getInt("lineNumber");
+            sb.append((className instanceof String) ? (String) className : className.toString()).append(".")
+                    .append((methodName instanceof String) ? (String) methodName : methodName.toString()).append("(")
+                    .append((fileName instanceof String) ? (String) fileName : fileName.toString()).append(":")
+                    .append(lineNumber).append(")").append("\n");
+        }
+        return sb.toString();
+    }
+
     private String returnFromJSON(String json, String type) {
         JSONObject jsonObject = new JSONObject(json);
         if(jsonObject.get(type) instanceof String) {
@@ -178,5 +202,6 @@ public class HybrisHTTPRequest {
         }
         return jsonObject.get(type) + "";
     }
+
 
 }

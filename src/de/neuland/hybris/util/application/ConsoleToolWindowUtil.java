@@ -29,7 +29,7 @@ public class ConsoleToolWindowUtil {
         return instance;
     }
 
-    public void showConsoleToolWindow(Project project, ConsoleView outputConsole, ConsoleView resultConsole, ConsoleView stackConsole, String title) {
+    public void showConsoleToolWindow(Project project, String title, ConsoleView... consoles) {
         Integer currentSelectedContentIndex = 0;
         if(toolWindow == null) {
             createNewToolWindow(project, title);
@@ -46,9 +46,9 @@ public class ConsoleToolWindowUtil {
             currentSelectedContentIndex = getCurrentSelectedTab();
             toolWindow.getContentManager().removeAllContents(false);
         }
-        setConsolesInToolWindow(outputConsole, resultConsole, stackConsole);
+        setConsolesInToolWindow(consoles);
         toolWindow.activate(null);
-        selectOldSelectedTab(currentSelectedContentIndex);
+        selectTab(currentSelectedContentIndex);
     }
 
     public void setConsoleName(String[] consoleName) {
@@ -59,19 +59,18 @@ public class ConsoleToolWindowUtil {
         this.consoleDescription = consoleDescription;
     }
 
-    private void selectOldSelectedTab(Integer currentSelectedContentIndex) {
+    public void selectTab(Integer currentSelectedContentIndex) {
         Content contentToSelect = toolWindow.getContentManager().getContent(currentSelectedContentIndex);
         toolWindow.getContentManager().setSelectedContent(contentToSelect);
     }
 
-    private void setConsolesInToolWindow(ConsoleView outputConsole, ConsoleView resultConsole, ConsoleView stackConsole) {
-        Content resultConsoleContent = createConsoleContent(resultConsole, consoleName[0], consoleDescription[0]);
-        Content outputConsoleContent = createConsoleContent(outputConsole, consoleName[1], consoleDescription[1]);
-        Content stackConsoleContent = createConsoleContent(stackConsole, consoleName[2], consoleDescription[2]);
-
-        toolWindow.getContentManager().addContent(resultConsoleContent);
-        toolWindow.getContentManager().addContent(outputConsoleContent);
-        toolWindow.getContentManager().addContent(stackConsoleContent);
+    private void setConsolesInToolWindow(ConsoleView... consoles) {
+        int i = 0;
+        for (ConsoleView consoleView : consoles) {
+            Content consoleContent = createConsoleContent(consoleView, consoleName[i], consoleDescription[i]);
+            toolWindow.getContentManager().addContent(consoleContent);
+            i++;
+        }
     }
 
     private Integer getCurrentSelectedTab() {

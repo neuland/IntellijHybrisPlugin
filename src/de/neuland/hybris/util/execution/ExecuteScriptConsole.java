@@ -50,7 +50,7 @@ public abstract class ExecuteScriptConsole extends ExecuteConsole {
     protected void showTabs(Project project, String tabHeadline, String[] consoleDescriptions) {
         ConsoleToolWindowUtil.getInstance().setConsoleName(CONSOLE_NAMES);
         ConsoleToolWindowUtil.getInstance().setConsoleDescription(consoleDescriptions);
-        ConsoleToolWindowUtil.getInstance().showConsoleToolWindow(project, outputConsole, resultConsole, stackConsole, tabHeadline);
+        ConsoleToolWindowUtil.getInstance().showConsoleToolWindow(project, tabHeadline, outputConsole, resultConsole, stackConsole);
     }
 
 }
