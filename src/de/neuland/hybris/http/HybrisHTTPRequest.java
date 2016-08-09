@@ -15,12 +15,14 @@ public class HybrisHTTPRequest {
     private final static String FLEXSEARCH_CONSOLE_EXECUTE_URL = "/console/flexsearch/execute";
     private final static String GROOVY_CONSOLE_EXECUTE_URL = "/console/groovy/execute";
     private final static String BEANSHELL_CONSOLE_EXECUTE_URL = "/console/beanshell/execute";
+    private final static String HYBRIS_5_CONSOLE_EXECUTE_URL = "/console/scripting/execute";
     private final static String HYBRIS_LOGIN_URL = "/j_spring_security_check";
     private String serverURL;
     //Variablen für Flexsearch
     private String username;
     private String maxCount;
     private String localeISOCode;
+    private boolean hybrisVersion5OrAbove;
 
     public static HybrisHTTPRequest getInstance() {
         return ourInstance;
@@ -46,6 +48,14 @@ public class HybrisHTTPRequest {
         this.username = username;
     }
 
+    public boolean isHybrisVersion5OrAbove() {
+        return hybrisVersion5OrAbove;
+    }
+
+    public void setHybrisVersion5OrAbove(boolean hybrisVersion5OrAbove) {
+        this.hybrisVersion5OrAbove = hybrisVersion5OrAbove;
+    }
+
     public boolean isUserdataSet() {
         HTTPRequestManager httpRequestManager = HTTPRequestManager.getInstance();
         return  httpRequestManager.isUserDataSet();
@@ -58,26 +68,38 @@ public class HybrisHTTPRequest {
     public String executeFlexsearchScript(String script, String jSessionID) {
         HTTPRequestManager httpRequestManager = HTTPRequestManager.getInstance();
         List<NameValuePair> scriptParameter = new ArrayList<NameValuePair>();
+        if(isHybrisVersion5OrAbove()) {
+            scriptParameter.add(new BasicNameValuePair("scriptType", "flexibleSearch"));
+            scriptParameter.add(new BasicNameValuePair("commit", "false"));
+        }
         scriptParameter.add(new BasicNameValuePair("flexibleSearchQuery", script));
         scriptParameter.add(new BasicNameValuePair("user", username));
         scriptParameter.add(new BasicNameValuePair("locale", localeISOCode));
         scriptParameter.add(new BasicNameValuePair("maxCount", maxCount));
         scriptParameter.add(new BasicNameValuePair("sqlQuery", ""));
-        return httpRequestManager.doPostRequestWithCookie(serverURL + FLEXSEARCH_CONSOLE_EXECUTE_URL, jSessionID, scriptParameter);
+        return httpRequestManager.doPostRequestWithCookie(serverURL + (isHybrisVersion5OrAbove() ? HYBRIS_5_CONSOLE_EXECUTE_URL : FLEXSEARCH_CONSOLE_EXECUTE_URL), jSessionID, scriptParameter);
     }
 
     public String executeGroovyScript(String script, String jSessionID) {
         HTTPRequestManager httpRequestManager = HTTPRequestManager.getInstance();
         List<NameValuePair> scriptParameter = new ArrayList<NameValuePair>();
+        if(isHybrisVersion5OrAbove()) {
+            scriptParameter.add(new BasicNameValuePair("scriptType", "groovy"));
+            scriptParameter.add(new BasicNameValuePair("commit", "false"));
+        }
         scriptParameter.add(new BasicNameValuePair("script", script));
-        return httpRequestManager.doPostRequestWithCookie(serverURL + GROOVY_CONSOLE_EXECUTE_URL, jSessionID, scriptParameter);
+        return httpRequestManager.doPostRequestWithCookie(serverURL + (isHybrisVersion5OrAbove() ? HYBRIS_5_CONSOLE_EXECUTE_URL : GROOVY_CONSOLE_EXECUTE_URL), jSessionID, scriptParameter);
     }
 
     public String executeBeanshellScript(String script, String jSessionID) {
         HTTPRequestManager httpRequestManager = HTTPRequestManager.getInstance();
         List<NameValuePair> scriptParameter = new ArrayList<NameValuePair>();
+        if(isHybrisVersion5OrAbove()) {
+            scriptParameter.add(new BasicNameValuePair("scriptType", "beanshell"));
+            scriptParameter.add(new BasicNameValuePair("commit", "false"));
+        }
         scriptParameter.add(new BasicNameValuePair("script", script));
-        return httpRequestManager.doPostRequestWithCookie(serverURL + BEANSHELL_CONSOLE_EXECUTE_URL, jSessionID, scriptParameter);
+        return httpRequestManager.doPostRequestWithCookie(serverURL + (isHybrisVersion5OrAbove() ? HYBRIS_5_CONSOLE_EXECUTE_URL : BEANSHELL_CONSOLE_EXECUTE_URL), jSessionID, scriptParameter);
     }
 
     public String getJSessionID(String username, String password) {

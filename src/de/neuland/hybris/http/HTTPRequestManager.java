@@ -109,12 +109,15 @@ public class HTTPRequestManager {
         SSLContext sslcontext = SSLContexts.custom()
                 .loadTrustMaterial(null, new TrustStrategy() {
                     @Override
-                    public boolean isTrusted(
-                            final X509Certificate[] chain,
-                            final String authType) throws CertificateException {
+                    public boolean isTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
                         return true;
                     }
                 }).build();
+
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+                sslcontext,
+                SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
+        );
 
         RequestConfig config = RequestConfig.custom()
                 .setSocketTimeout(timeout * 1000)
@@ -123,6 +126,7 @@ public class HTTPRequestManager {
 
         return HttpClients.custom()
                 .setSslcontext(sslcontext)
+                .setSSLSocketFactory(sslsf)
                 .setDefaultRequestConfig(config)
                 .build();
     }

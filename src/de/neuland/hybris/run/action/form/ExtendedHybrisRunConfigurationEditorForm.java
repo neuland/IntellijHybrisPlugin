@@ -8,8 +8,10 @@ import java.awt.*;
 public class ExtendedHybrisRunConfigurationEditorForm extends SimpleHybrisRunConfigurationEditorForm {
 
     private static final String[] LOCALE_ISO_CODES = {"de", "fr", "en", "at", "ch", "nl", "no", "pl"};
+    private static final String[] HYBRIS_VERSIONS = new String[]{"< 5.0", ">= 5.0"};
     private JTextField maxCountField;
     private JComboBox localeIsoCodeBox;
+    private JComboBox hybrisVersionComboBox;
 
     public ExtendedHybrisRunConfigurationEditorForm() {
         super();
@@ -17,6 +19,7 @@ public class ExtendedHybrisRunConfigurationEditorForm extends SimpleHybrisRunCon
         createHeadline();
         createMaxCountInput();
         createLocaleIsoCodeComboBox();
+        createHybrisVersionComboBox();
     }
 
     private void createHeadline() {
@@ -68,6 +71,25 @@ public class ExtendedHybrisRunConfigurationEditorForm extends SimpleHybrisRunCon
         add(localeIsoCodeBox, gbcLocaleIsoCode);
     }
 
+    private void createHybrisVersionComboBox() {
+        JLabel hybrisVersionLable = new JLabel("HybrisVesion");
+        GridBagConstraints bcdMacCountLable = new GridBagConstraints();
+        bcdMacCountLable.insets = new Insets(0, 0, 5, 5);
+        bcdMacCountLable.anchor = GridBagConstraints.EAST;
+        bcdMacCountLable.gridx = 0;
+        bcdMacCountLable.gridy = 8;
+        add(hybrisVersionLable, bcdMacCountLable);
+
+        hybrisVersionComboBox = new ComboBox(HYBRIS_VERSIONS);
+        hybrisVersionLable.setLabelFor(hybrisVersionComboBox);
+        GridBagConstraints gbcHybrisVersion = new GridBagConstraints();
+        gbcHybrisVersion.insets = new Insets(0, 0, 5, 0);
+        gbcHybrisVersion.fill = GridBagConstraints.HORIZONTAL;
+        gbcHybrisVersion.gridx = 1;
+        gbcHybrisVersion.gridy = 8;
+        add(hybrisVersionComboBox, gbcHybrisVersion);
+    }
+
     private void createSeperator() {
         JSeparator separator1 = new JSeparator();
         GridBagConstraints gbcSeparator1 = new GridBagConstraints();
@@ -92,6 +114,14 @@ public class ExtendedHybrisRunConfigurationEditorForm extends SimpleHybrisRunCon
         }
     }
 
+    public void selectHybrisVersionIfExist(String hybrisVersion) {
+        for(int i = 0; i < HYBRIS_VERSIONS.length; i++) {
+            if(HYBRIS_VERSIONS[i].equals(hybrisVersion)) {
+                hybrisVersionComboBox.setSelectedIndex(i);
+            }
+        }
+    }
+
     public JTextField getMaxCountField() {
         return maxCountField;
     }
@@ -100,4 +130,7 @@ public class ExtendedHybrisRunConfigurationEditorForm extends SimpleHybrisRunCon
         return localeIsoCodeBox;
     }
 
+    public JComboBox getHybrisVersionComboBox() {
+        return hybrisVersionComboBox;
+    }
 }

@@ -42,6 +42,7 @@ public class HybrisRunConfiguration extends RunConfigurationBase {
         String hacPassword = ApplicationPersitanceUtil.getApplicationSetting(ExtendedHybrisConfigurationSettingType.HAC_PASSWORD.name() + HYBIRS_RUN_CONFIGURATION);
         String maxCount = ApplicationPersitanceUtil.getApplicationSetting(ExtendedHybrisConfigurationSettingType.MAX_COUNT.name() + HYBIRS_RUN_CONFIGURATION);
         String localISOCode = ApplicationPersitanceUtil.getApplicationSetting(ExtendedHybrisConfigurationSettingType.LOCALE_ISO_CODE.name() + HYBIRS_RUN_CONFIGURATION);
+        String hybrisVersion = ApplicationPersitanceUtil.getApplicationSetting(ExtendedHybrisConfigurationSettingType.HYBRIS_VERSION.name() + HYBIRS_RUN_CONFIGURATION);
         return new HybrisRunProfileState(getProject(),executionEnvironment, executor, serverUrl, hacUser, hacPassword, maxCount,localISOCode);
     }
 

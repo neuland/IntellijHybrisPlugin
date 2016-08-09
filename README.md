@@ -9,6 +9,7 @@ Download the plugin from [JetBrains repository](https://plugins.jetbrains.com/pl
     * Look for 'Console script in hybris'
 * Define the URL fpr the haC and your haC username and password
 * You also can add parameters for FlexibleSearch
+* If you use hybris 5 or above, please select it in the combo box
 
 ### Run a groovy script
 * Create a new file that end with .groovy

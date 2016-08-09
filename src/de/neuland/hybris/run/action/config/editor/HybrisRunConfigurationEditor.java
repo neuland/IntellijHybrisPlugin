@@ -28,9 +28,9 @@ public class HybrisRunConfigurationEditor extends SettingsEditor<HybrisRunConfig
         HTTPRequestManager.getInstance().setUsername(null);
         HTTPRequestManager.getInstance().setPassword(null);
 
-        HybrisHTTPRequest.getInstance().setUsername(null);
         HybrisHTTPRequest.getInstance().setMaxCount(null);
         HybrisHTTPRequest.getInstance().setLocaleISOCode(null);
+        HybrisHTTPRequest.getInstance().setHybrisVersion5OrAbove(false);
 
         //Werte aus Programmspeicher löschen
         ApplicationPersitanceUtil.removeApplicationSetting(ExtendedHybrisConfigurationSettingType.HYBRIS_SERVER_URL.name() + "-" + hybrisRunConfiguration.getName());
@@ -50,6 +50,7 @@ public class HybrisRunConfigurationEditor extends SettingsEditor<HybrisRunConfig
         HybrisHTTPRequest.getInstance().setUsername(myRootComponent.getHACUsernameInput().getText());
         HybrisHTTPRequest.getInstance().setMaxCount(myRootComponent.getMaxCountField().getText());
         HybrisHTTPRequest.getInstance().setLocaleISOCode((String) myRootComponent.getLocaleIsoCodeBox().getSelectedItem());
+        HybrisHTTPRequest.getInstance().setHybrisVersion5OrAbove(">= 5.0".equals(myRootComponent.getHybrisVersionComboBox().getSelectedItem()));
 
         //Wert in Programmspeicher ablegen
         ApplicationPersitanceUtil.saveApplicationSetting(ExtendedHybrisConfigurationSettingType.HYBRIS_SERVER_URL.name() + "-" + hybrisRunConfiguration.getName(), myRootComponent.getHybrisServerURLInput().getText());
@@ -57,6 +58,7 @@ public class HybrisRunConfigurationEditor extends SettingsEditor<HybrisRunConfig
         ApplicationPersitanceUtil.saveApplicationSetting(ExtendedHybrisConfigurationSettingType.HAC_PASSWORD.name() + "-" + hybrisRunConfiguration.getName(), String.valueOf(myRootComponent.getHACPasswordInput().getPassword()));
         ApplicationPersitanceUtil.saveApplicationSetting(ExtendedHybrisConfigurationSettingType.MAX_COUNT.name() + "-" + hybrisRunConfiguration.getName(), myRootComponent.getMaxCountField().getText());
         ApplicationPersitanceUtil.saveApplicationSetting(ExtendedHybrisConfigurationSettingType.LOCALE_ISO_CODE.name() + "-" + hybrisRunConfiguration.getName(), (String) myRootComponent.getLocaleIsoCodeBox().getSelectedItem());
+        ApplicationPersitanceUtil.saveApplicationSetting(ExtendedHybrisConfigurationSettingType.HYBRIS_VERSION.name() + "-" + hybrisRunConfiguration.getName(), (String) myRootComponent.getHybrisVersionComboBox().getSelectedItem());
     }
 
     @NotNull
@@ -76,5 +78,6 @@ public class HybrisRunConfigurationEditor extends SettingsEditor<HybrisRunConfig
         myRootComponent.getHACPasswordInput().setText(ApplicationPersitanceUtil.getApplicationSetting(ExtendedHybrisConfigurationSettingType.HAC_PASSWORD.name() + "-" + hybrisRunConfiguration.getName()));
         myRootComponent.getMaxCountField().setText(ApplicationPersitanceUtil.getApplicationSetting(ExtendedHybrisConfigurationSettingType.MAX_COUNT.name() + "-" + hybrisRunConfiguration.getName()));
         myRootComponent.selectLocaleIsoCodeIfExist(ApplicationPersitanceUtil.getApplicationSetting(ExtendedHybrisConfigurationSettingType.LOCALE_ISO_CODE.name() + "-" + hybrisRunConfiguration.getName()));
+        myRootComponent.selectHybrisVersionIfExist(ApplicationPersitanceUtil.getApplicationSetting(ExtendedHybrisConfigurationSettingType.HYBRIS_VERSION.name() + "-" + hybrisRunConfiguration.getName()));
     }
 }
